@@ -1,48 +1,44 @@
 import pandas as pd
 trust = pd.read_csv('trust.csv')
-fiz_m100 = trust['TrustIndexPSKfiz'] >= 101.
-fiz_s100 = trust['TrustIndexPSKfiz'] <= 100.
-fiz_m75 = trust['TrustIndexPSKfiz'] >= 75.
-fiz_s75 = trust['TrustIndexPSKfiz'] <= 74.
-fiz_m50 = trust['TrustIndexPSKfiz'] >= 50.
-fiz_s50 = trust['TrustIndexPSKfiz'] <= 49.
-fiz_m0 = trust['TrustIndexPSKfiz'] >= 1.
-fiz_s0 = trust['TrustIndexPSKfiz'] <= 0.
-odn_m100 = trust['TrustIndexPSKODN'] >= 101.
-odn_s100 = trust['TrustIndexPSKODN'] <= 100.
-odn_m75 = trust['TrustIndexPSKODN'] >= 75.
-odn_s75 = trust['TrustIndexPSKODN'] <= 74.
-odn_m50 = trust['TrustIndexPSKODN'] >= 50.
-odn_s50 = trust['TrustIndexPSKODN'] <= 49.
-odn_m0 = trust['TrustIndexPSKODN'] >= 1.
-odn_s0 = trust['TrustIndexPSKODN'] <= 0.
-ur_m100 = trust['TrustIndexPSKurik'] >= 101.
-ur_s100 = trust['TrustIndexPSKurik'] <= 100.
-ur_m75 = trust['TrustIndexPSKurik'] >= 75.
-ur_s75 = trust['TrustIndexPSKurik'] <= 74.
-ur_m50 = trust['TrustIndexPSKurik'] >= 50.
-ur_s50 = trust['TrustIndexPSKurik'] <= 49.
-ur_m0 = trust['TrustIndexPSKurik'] >= 1.
-ur_s0 = trust['TrustIndexPSKurik'] <= 0.
-first_group = trust[fiz_m75 & fiz_s100 & odn_m75 & odn_s100 & ur_m75 & ur_s100]
+first_group = trust[(trust['TrustIndexPSKfiz'] >= 75.) & (trust['TrustIndexPSKfiz'] <= 100.) & (trust['TrustIndexPSKODN'] >= 75.) & (trust['TrustIndexPSKODN'] <= 100.) & (trust['TrustIndexPSKurik'] >= 75.) & (trust['TrustIndexPSKurik'] <= 100.)]
 if len(first_group) != 0:
     first_group.to_csv('first_group.csv', index=False)
-second_group = trust[fiz_m50 & fiz_s75 & odn_m50 & odn_s75 & ur_m50 & ur_s75]
-if len(second_group) != 0:
-    second_group.to_csv('second_group.csv', index=False)
-third_group = trust[fiz_m0 & fiz_s50 & odn_m0 & odn_s50 & ur_m0 & ur_s50]
+first_group = trust[(trust['TrustIndexPSKfiz'] >= 75.) & (trust['TrustIndexPSKfiz'] <= 100.) & (trust['TrustIndexPSKODN'] >= 75.) & (trust['TrustIndexPSKODN'] <= 100.) & (trust['TrustIndexPSKurik'] >= 75.) & (trust['TrustIndexPSKurik'] <= 100.)]
+if len(first_group) != 0:
+    first_group.to_csv('first_group.csv', index=False)
+third_group = trust[(trust['TrustIndexPSKfiz'] >= 1.) & (trust['TrustIndexPSKfiz'] <= 49.) & (trust['TrustIndexPSKODN'] >= 1.) & (trust['TrustIndexPSKODN'] <= 49.) & (trust['TrustIndexPSKurik'] >= 1.) & (trust['TrustIndexPSKurik'] <= 49.)]
 if len(third_group) != 0:
     third_group.to_csv('third_group.csv', index=False)
-fourth_group = trust[(fiz_m100 | fiz_s0) & (odn_m100 | odn_s0) & (ur_m100 | ur_s0)]
+fourth_group = trust[((trust['TrustIndexPSKfiz'] >= 101.) | (trust['TrustIndexPSKfiz'] <= 0.)) & ((trust['TrustIndexPSKODN'] >= 101.) | (trust['TrustIndexPSKODN'] <= 0.)) & ((trust['TrustIndexPSKurik'] >= 101.) | (trust['TrustIndexPSKurik'] <= 0.))]
 if len(fourth_group) != 0:
     fourth_group.to_csv('fourth_group.csv', index=False)
-# Берем значения из таблицы, в которых хотя бы 1 индекс превышал 100
-non_unique = trust[fiz_m100 | odn_m100 | ur_m100]
-# Ищем повторяющихся айди
-non_unique_id = non_unique['BalanceId']
-non_unique_chels = non_unique_id[non_unique_id.duplicated()]
-# Получаем таблицу с повторяющимися
-non_unique_table = non_unique[non_unique_id.isin(non_unique_chels)]
-# Берем максимальное значение
-non_unique_table['max_index'] = non_unique_table[['TrustIndexPSKfiz', 'TrustIndexPSKODN', 'TrustIndexPSKurik']].max(axis=1)
-non_unique_table[['BalanceId', 'DateMonth', 'max_index']].to_csv('task2.csv', index=False)
+d_fiz = {}
+d_odn = {}
+d_ur = {}
+for i in range(len(trust)):
+    if trust.TrustIndexPSKfiz[i] > 101 and trust.TrustIndexPSKfiz[i] in d_fiz.keys():
+        d_fiz[trust.TrustIndexPSKfiz[i]] += 1
+    elif trust.TrustIndexPSKfiz[i] > 101:
+        d_fiz.update({trust.TrustIndexPSKfiz[i]: 1})
+    if trust.TrustIndexPSKODN[i] > 101 and trust.TrustIndexPSKODN[i] in d_odn.keys():
+        d_odn[trust.TrustIndexPSKODN[i]] += 1
+    elif trust.TrustIndexPSKODN[i] > 101:
+        d_odn.update({trust.TrustIndexPSKODN[i]: 1})
+    if trust.TrustIndexPSKurik[i] > 101 and trust.TrustIndexPSKurik[i] in d_ur.keys():
+        d_ur[trust.TrustIndexPSKurik[i]] += 1
+    elif trust.TrustIndexPSKurik[i] > 101:
+        d_ur.update({trust.TrustIndexPSKurik[i]: 1})
+ans = pd.DataFrame()
+for i in range(len(trust)):
+    if trust.TrustIndexPSKfiz[i] in d_fiz.keys() and d_fiz[trust.TrustIndexPSKfiz[i]] > 1:
+        line = {'BalanceId': trust.BalanceId[i], 'DateMonth': trust.DateMonth[i], 'Index': trust.TrustIndexPSKfiz[i]}
+        ans = ans.append(line, ignore_index=True)
+    if trust.TrustIndexPSKODN[i] in d_odn.keys() and d_odn[trust.TrustIndexPSKODN[i]] > 1:
+        line = {'BalanceId': trust.BalanceId[i], 'DateMonth': trust.DateMonth[i], 'Index': trust.TrustIndexPSKODN[i]}
+        ans = ans.append(line, ignore_index=True)
+    if trust.TrustIndexPSKurik[i] in d_ur.keys() and d_ur[trust.TrustIndexPSKurik[i]] > 1:
+        line = {'BalanceId': trust.BalanceId[i], 'DateMonth': trust.DateMonth[i], 'Index': trust.TrustIndexPSKurik[i]}
+        ans = ans.append(line, ignore_index=True)
+ans = ans.sort_values('Index')
+ans.reset_index(drop=True, inplace=True)
+ans.to_csv('task2.csv', index=False)
